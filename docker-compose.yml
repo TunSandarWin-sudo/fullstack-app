@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: app_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./backend/seed.sql:/docker-entrypoint-initdb.d/seed.sql:ro
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+    container_name: app_api
+    env_file:
+      - ./backend/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "4000:4000"  # 与 index.js 的 PORT 对齐
+    command: ["npm", "start"]  # 确保 backend/package.json 有 start 脚本
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: app_frontend
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"  # React dev server 默认 3000
+    command: ["npm", "start"]  # 确保 frontend/package.json 有 start 脚本
+    environment:
+      # 让前端在浏览器中请求后端地址（非同容器网络）
+      REACT_APP_API_URL: http://localhost:4000
+    restart: unless-stopped
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    user: root
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  jenkins_home:
