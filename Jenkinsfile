@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // 可以从 Jenkins 的凭证管理里读取
         DOCKER_IMAGE = "fullstack-app"
         DOCKER_TAG = "latest"
     }
@@ -17,13 +16,13 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh 'cd backend && npm install'
-                sh 'cd frontend && npm install'
+                sh 'cd 02_frontend && npm install'
             }
         }
 
         stage('Build Frontend') {
             steps {
-                sh 'cd frontend && npm run build'
+                sh 'cd 02_frontend && npm run build'
             }
         }
 
@@ -44,7 +43,6 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // 这里可以用 docker-compose 或 kubectl
                 sh 'docker-compose down && docker-compose up -d'
             }
         }
