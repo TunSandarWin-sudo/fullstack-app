@@ -7,6 +7,7 @@ pipeline {
     }
 
     stages {
+        // ... (Checkout 阶段保持不变) ...
         stage('Checkout') {
             agent any 
             steps {
@@ -15,11 +16,11 @@ pipeline {
             }
         }
 
+        // ... (Install and Build 阶段保持不变，已解决权限问题) ...
         stage('Install and Build') {
             agent {
                 docker {
                     image 'node:20-alpine' 
-                    // 确保构建有权限
                     args '-u root' 
                 }
             }
@@ -36,21 +37,21 @@ pipeline {
             agent {
                 docker {
                     image 'docker:latest'
-                    // ✅ 修正：将 --entrypoint='' 放在 args 中
                     args '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock -u root' 
                 }
             }
             steps {
                 echo "📦 正在构建 Docker 镜像: ${env.DOCKER_REPO}:${env.DOCKER_TAG}"
-                sh "docker build -t ${env.DOCKER_REPO}:${env.DOCKER_TAG} ."
+                // 🌟 最终修正：明确指定根目录下的 Dockerfile
+                sh "docker build -t ${env.DOCKER_REPO}:${env.DOCKER_TAG} -f ./Dockerfile ."
             }
         }
 
+        // ... (Docker Push 和 Deploy 阶段保持不变) ...
         stage('Docker Push') {
             agent {
                 docker {
                     image 'docker:latest'
-                    // ✅ 修正：将 --entrypoint='' 放在 args 中
                     args '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock -u root'
                 }
             }
@@ -58,7 +59,6 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     echo '🔑 正在登录 Docker Hub...'
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    echo '⬆️ 正在推送 Docker 镜像...'
                     sh "docker push ${env.DOCKER_REPO}:${env.DOCKER_TAG}"
                 }
             }
@@ -68,7 +68,6 @@ pipeline {
             agent {
                 docker {
                     image 'docker/compose:latest'
-                    // ✅ 修正：将 --entrypoint='' 放在 args 中
                     args '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock -u root'
                 }
             }
