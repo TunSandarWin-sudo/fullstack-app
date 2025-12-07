@@ -1,4 +1,5 @@
 pipeline {
+    // ✅ 必须是 agent none，因为 docker agent 是在 stage 级别指定的
     agent none 
 
     environment {
@@ -7,8 +8,8 @@ pipeline {
     }
 
     stages {
-        // ... (Checkout 阶段保持不变) ...
         stage('Checkout') {
+            // 使用任何可用的 Jenkins Agent 进行代码检出
             agent any 
             steps {
                 echo '🚚 正在检出代码...'
@@ -16,8 +17,8 @@ pipeline {
             }
         }
 
-        // ... (Install and Build 阶段保持不变，已解决权限问题) ...
         stage('Install and Build') {
+            // ✅ stage 级别的 docker agent
             agent {
                 docker {
                     image 'node:20-alpine' 
@@ -34,6 +35,7 @@ pipeline {
         }
 
         stage('Docker Build') {
+            // ✅ stage 级别的 docker agent (已包含所有修复)
             agent {
                 docker {
                     image 'docker:latest'
@@ -42,12 +44,11 @@ pipeline {
             }
             steps {
                 echo "📦 正在构建 Docker 镜像: ${env.DOCKER_REPO}:${env.DOCKER_TAG}"
-                // 🌟 最终修正：明确指定根目录下的 Dockerfile
+                // 最终修正：明确指定根目录下的 Dockerfile
                 sh "docker build -t ${env.DOCKER_REPO}:${env.DOCKER_TAG} -f ./Dockerfile ."
             }
         }
 
-        // ... (Docker Push 和 Deploy 阶段保持不变) ...
         stage('Docker Push') {
             agent {
                 docker {
