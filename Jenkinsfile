@@ -19,6 +19,7 @@ pipeline {
             agent {
                 docker {
                     image 'node:20-alpine' 
+                    // 确保构建有权限
                     args '-u root' 
                 }
             }
@@ -35,9 +36,8 @@ pipeline {
             agent {
                 docker {
                     image 'docker:latest'
-                    // ✅ 修正语法：使用 entrypoint '' 或 entrypoint = ''
-                    entrypoint ''
-                    args '-v /var/run/docker.sock:/var/run/docker.sock -u root' 
+                    // ✅ 修正：将 --entrypoint='' 放在 args 中
+                    args '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock -u root' 
                 }
             }
             steps {
@@ -50,8 +50,8 @@ pipeline {
             agent {
                 docker {
                     image 'docker:latest'
-                    entrypoint ''
-                    args '-v /var/run/docker.sock:/var/run/docker.sock -u root'
+                    // ✅ 修正：将 --entrypoint='' 放在 args 中
+                    args '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock -u root'
                 }
             }
             steps {
@@ -68,8 +68,8 @@ pipeline {
             agent {
                 docker {
                     image 'docker/compose:latest'
-                    entrypoint ''
-                    args '-v /var/run/docker.sock:/var/run/docker.sock -u root'
+                    // ✅ 修正：将 --entrypoint='' 放在 args 中
+                    args '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock -u root'
                 }
             }
             steps {
