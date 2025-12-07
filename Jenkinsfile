@@ -19,7 +19,6 @@ pipeline {
             agent {
                 docker {
                     image 'node:20-alpine' 
-                    // 确保构建有权限
                     args '-u root' 
                 }
             }
@@ -36,9 +35,8 @@ pipeline {
             agent {
                 docker {
                     image 'docker:latest'
-                    // 🌟 解决 ENTRYPOINT 冲突
-                    entrypoint: ''
-                    // 解决 Docker Build 权限问题和 Socket 挂载
+                    // ✅ 修正语法：使用 entrypoint '' 或 entrypoint = ''
+                    entrypoint ''
                     args '-v /var/run/docker.sock:/var/run/docker.sock -u root' 
                 }
             }
@@ -52,8 +50,7 @@ pipeline {
             agent {
                 docker {
                     image 'docker:latest'
-                    // 🌟 解决 ENTRYPOINT 冲突
-                    entrypoint: ''
+                    entrypoint ''
                     args '-v /var/run/docker.sock:/var/run/docker.sock -u root'
                 }
             }
@@ -71,8 +68,7 @@ pipeline {
             agent {
                 docker {
                     image 'docker/compose:latest'
-                    // 🌟 解决 ENTRYPOINT 冲突
-                    entrypoint: ''
+                    entrypoint ''
                     args '-v /var/run/docker.sock:/var/run/docker.sock -u root'
                 }
             }
