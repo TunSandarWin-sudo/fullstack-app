@@ -9,3 +9,4 @@ export default function App() {
     React.createElement(ItemList, null)
   );
 }
+export { default } from "./App.js";
