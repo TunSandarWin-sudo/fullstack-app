@@ -39,7 +39,8 @@ pipeline {
             }
             steps {
                 echo "📦 使用 docker-compose.yml 构建镜像..."
-                sh 'docker-compose build'
+                // 🌟 修正：使用 docker compose build
+                sh 'docker compose build' 
             }
         }
 
@@ -55,7 +56,8 @@ pipeline {
                     echo '🔑 正在登录 Docker Hub...'
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                     echo '⬆️ 推送镜像到 Docker Hub...'
-                    sh 'docker-compose push'
+                    // 🌟 修正：使用 docker compose push
+                    sh 'docker compose push'
                 }
             }
         }
@@ -69,7 +71,8 @@ pipeline {
             }
             steps {
                 echo '🚀 使用 docker-compose.yml 部署应用...'
-                sh 'docker-compose down && docker-compose up -d'
+                // 🌟 修正：使用 docker compose down && docker compose up -d
+                sh 'docker compose down && docker compose up -d'
             }
         }
     }
