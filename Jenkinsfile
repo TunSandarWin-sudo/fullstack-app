@@ -28,10 +28,10 @@ pipeline {
                 sh 'cd 02_frontend && npm install'
                 sh 'cd 02_frontend && npm run build'
 
+                // 确保 .env 文件存在于工作区
                 sh 'echo "MYSQL_ROOT_PASSWORD=supersecretroot" > backend/.env'
                 sh 'echo "MYSQL_PASSWORD=supersecretapp" >> backend/.env'
                 
-                // 🌟 新增：在工作区创建 02_frontend/.env 文件
                 sh 'echo "REACT_APP_API_URL=http://localhost:4000" > 02_frontend/.env'
             }
         }
@@ -39,13 +39,15 @@ pipeline {
         stage('Docker Compose Build') {
             agent {
                 docker {
-                    image 'docker/compose:latest'
+                    // 🌟 最终修正：更换为带有更新 Docker 客户端的镜像
+                    image 'docker:24.0-cli'
+                    // 保持 V1 命令兼容性所需的参数
                     args '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock -u root'
                 }
             }
             steps {
                 echo "📦 使用 docker-compose.yml 构建镜像..."
-                // 🌟 修正：切换回 V1 语法，使用 'docker-compose build'
+                // 保持 V1 语法
                 sh 'docker-compose build' 
             }
         }
@@ -53,7 +55,8 @@ pipeline {
         stage('Docker Compose Push') {
             agent {
                 docker {
-                    image 'docker/compose:latest'
+                    // 🌟 最终修正：更换为带有更新 Docker 客户端的镜像
+                    image 'docker:24.0-cli'
                     args '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock -u root'
                 }
             }
@@ -62,7 +65,7 @@ pipeline {
                     echo '🔑 正在登录 Docker Hub...'
                     sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                     echo '⬆️ 推送镜像到 Docker Hub...'
-                    // 🌟 修正：切换回 V1 语法，使用 'docker-compose push'
+                    // 保持 V1 语法
                     sh 'docker-compose push'
                 }
             }
@@ -71,13 +74,14 @@ pipeline {
         stage('Deploy') {
             agent {
                 docker {
-                    image 'docker/compose:latest'
+                    // 🌟 最终修正：更换为带有更新 Docker 客户端的镜像
+                    image 'docker:24.0-cli'
                     args '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock -u root'
                 }
             }
             steps {
                 echo '🚀 使用 docker-compose.yml 部署应用...'
-                // 🌟 修正：切换回 V1 语法，使用 'docker-compose down && docker-compose up -d'
+                // 保持 V1 语法
                 sh 'docker-compose down && docker-compose up -d'
             }
         }
