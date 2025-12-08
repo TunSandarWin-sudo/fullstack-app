@@ -1,9 +1,9 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import itemsRouter from "./routes/items.js";
-import usersRouter from "./routes/users.js";
-import { pool } from "./db.js";
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const itemsRouter = require("./routes/items.js");
+const usersRouter = require("./routes/users.js");
+const { pool } = require("./db.js");
 
 dotenv.config();
 const app = express();
@@ -20,7 +20,7 @@ app.get("/health", async (_req, res) => {
   }
 });
 
-// 挂载路由（只挂载一次）
+// 挂载路由
 app.use("/api/items", itemsRouter);
 app.use("/api/users", usersRouter);
 
