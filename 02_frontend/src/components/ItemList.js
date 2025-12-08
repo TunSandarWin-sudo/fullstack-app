@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const API_BASE = import.meta.env.VITE_API_URL; // 从环境变量读取
+const API_BASE = import.meta.env.VITE_API_URL;
 
 export default function ItemList() {
   const [items, setItems] = useState([]);
@@ -31,36 +31,37 @@ export default function ItemList() {
   }
 
   if (error) {
-    return <p style={{ color: "red" }}>{error}</p>;
+    return React.createElement("p", { style: { color: "red" } }, error);
   }
 
-  return (
-    <div style={{ padding: "12px" }}>
-      <ul>
-        {items.map(i => (
-          <li key={i.id}>
-            {i.name} — ${Number(i.price).toFixed(2)}
-          </li>
-        ))}
-      </ul>
-
-      <input
-        type="text"
-        placeholder="Item name"
-        value={name}
-        onChange={e => setName(e.target.value)}
-        style={{ marginRight: "8px" }}
-      />
-
-      <input
-        type="number"
-        placeholder="Price"
-        value={price}
-        onChange={e => setPrice(e.target.value)}
-        style={{ marginRight: "8px" }}
-      />
-
-      <button onClick={addItem}>Add Item</button>
-    </div>
+  return React.createElement(
+    "div",
+    { style: { padding: "12px" } },
+    React.createElement(
+      "ul",
+      null,
+      items.map(i =>
+        React.createElement(
+          "li",
+          { key: i.id },
+          `${i.name} — $${Number(i.price).toFixed(2)}`
+        )
+      )
+    ),
+    React.createElement("input", {
+      type: "text",
+      placeholder: "Item name",
+      value: name,
+      onChange: e => setName(e.target.value),
+      style: { marginRight: "8px" }
+    }),
+    React.createElement("input", {
+      type: "number",
+      placeholder: "Price",
+      value: price,
+      onChange: e => setPrice(e.target.value),
+      style: { marginRight: "8px" }
+    }),
+    React.createElement("button", { onClick: addItem }, "Add Item")
   );
 }
