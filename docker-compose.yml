@@ -24,7 +24,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "4000:4000"
+      - "3001:4000"   # 宿主机 3001 → 容器 4000
     command: ["npm", "start"]
     restart: unless-stopped
 
@@ -34,14 +34,14 @@ services:
     depends_on:
       - api
     ports:
-      - "80:80"   # 前端改成 8085，避免和宿主机已有端口冲突
+      - "3000:80"     # 宿主机 3000 → 容器 80
     restart: unless-stopped
 
   jenkins:
     image: jenkins/jenkins:lts
     user: root
     ports:
-      - "8081:8080"
+      - "8080:8080"   # 宿主机 8080 → 容器 8080
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
@@ -52,7 +52,7 @@ services:
     image: phpmyadmin/phpmyadmin:latest
     restart: unless-stopped
     ports:
-      - "8082:80"
+      - "8888:80"     # 宿主机 8888 → 容器 80
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
