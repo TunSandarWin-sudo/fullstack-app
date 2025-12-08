@@ -27,6 +27,12 @@ pipeline {
                 sh 'cd backend && npm install'
                 sh 'cd 02_frontend && npm install'
                 sh 'cd 02_frontend && npm run build'
+
+                sh 'echo "MYSQL_ROOT_PASSWORD=supersecretroot" > backend/.env'
+                sh 'echo "MYSQL_PASSWORD=supersecretapp" >> backend/.env'
+                
+                // 🌟 新增：在工作区创建 02_frontend/.env 文件
+                sh 'echo "REACT_APP_API_URL=http://localhost:4000" > 02_frontend/.env'
             }
         }
 
