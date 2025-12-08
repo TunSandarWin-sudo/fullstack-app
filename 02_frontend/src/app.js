@@ -9,7 +9,7 @@ export default function App() {
     React.createElement(ItemList, null)
   );
 }
-import React from "react";
+
 import ItemList from "./components/ItemList.js";
 
 export default function App() {
