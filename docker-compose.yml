@@ -30,23 +30,22 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "4000:4000"  # 与 index.js 的 PORT 对齐
-    command: ["npm", "start"]  # 确保 backend/package.json 有 start 脚本
+      - "4000:4000"
+    command: ["npm", "start"]
     restart: unless-stopped
 
   frontend:
     build:
-      context: ./frontend
+      context: ./02_frontend # <-- 修正点: 正确指向项目目录
     container_name: app_frontend
     env_file:
-      - ./frontend/.env
+      - ./02_frontend/.env # <-- 修正点: 正确指向 .env 文件路径
     depends_on:
       - api
     ports:
-      - "3000:3000"  # React dev server 默认 3000
-    command: ["npm", "start"]  # 确保 frontend/package.json 有 start 脚本
+      - "3000:3000"
+    command: ["npm", "start"]
     environment:
-      # 让前端在浏览器中请求后端地址（非同容器网络）
       REACT_APP_API_URL: http://localhost:4000
     restart: unless-stopped
 
@@ -55,11 +54,11 @@ services:
     container_name: jenkins
     user: root
     ports:
-      - "8081:8080"
-      - "50000:50000"
+      - "8081:8080" # Jenkins Web 端口映射
+      - "50000:50000" # Jenkins Agent 通信端口
     volumes:
       - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock # 允许 Jenkins 在容器内操作 Docker
     restart: unless-stopped
 
 volumes:
