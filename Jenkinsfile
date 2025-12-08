@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_REPO = "fullstack-app"
         DOCKER_TAG = "latest"
+        DOCKER_API_VERSION = "1.44"
     }
 
     stages {
