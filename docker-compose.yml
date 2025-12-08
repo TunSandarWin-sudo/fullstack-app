@@ -25,7 +25,7 @@ services:
       context: ./backend
     container_name: app_api
     env_file:
-      - ./backend/.env
+      - ./backend/.env.prod
     depends_on:
       db:
         condition: service_healthy
