@@ -34,7 +34,7 @@ services:
     depends_on:
       - api
     ports:
-      - "3000:80"
+      - "8080:80"   # 改成 8080，避免和宿主机已有的 3000 冲突
     restart: unless-stopped
 
   jenkins:
@@ -52,7 +52,7 @@ services:
     image: phpmyadmin/phpmyadmin:latest
     restart: unless-stopped
     ports:
-      - "8082:80"   # 宿主机 8082 → 容器 80
+      - "8082:80"
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
