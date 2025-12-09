@@ -34,6 +34,7 @@ pipeline {
                 sh 'echo "MYSQL_ROOT_PASSWORD=supersecretroot" > backend/.env'
                 sh 'echo "MYSQL_PASSWORD=supersecretapp" >> backend/.env'
                 
+                // 🌟 关键修复：API URL 必须使用 Docker Compose 服务名 'api' 才能在容器内连接
                 sh 'echo "REACT_APP_API_URL=http://api:4000" > 02_frontend/.env'
             }
         }
@@ -67,18 +68,18 @@ pipeline {
                 echo '🚀 使用本地构建的镜像部署应用...'
                 // 停止并清理旧容器
                 sh 'docker-compose down'
-                // 启动新容器，并添加 --build 确保在部署前如果需要会重新构建最新的本地代码（尽管前面已经构建过，作为安全措施）
+                // 启动新容器
                 sh 'docker-compose up -d --build'
             }
         }
     }
-
+    
     post {
         success {
-            echo '✅ 部署成功！'
+            echo "✅ 构建成功，应用已部署！"
         }
         failure {
-            echo '❌ 构建失败，请检查日志。'
+            echo "❌ 构建失败，请检查日志。"
         }
     }
 }
