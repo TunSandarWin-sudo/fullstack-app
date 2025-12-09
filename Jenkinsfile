@@ -34,7 +34,7 @@ pipeline {
                 sh 'echo "MYSQL_ROOT_PASSWORD=supersecretroot" > backend/.env'
                 sh 'echo "MYSQL_PASSWORD=supersecretapp" >> backend/.env'
                 
-                sh 'echo "REACT_APP_API_URL=http://localhost:4000" > 02_frontend/.env'
+                sh 'echo "REACT_APP_API_URL=http://api:4000" > 02_frontend/.env'
             }
         }
 
