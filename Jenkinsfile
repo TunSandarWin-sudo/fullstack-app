@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER_REPO = "fullstack-app"
         DOCKER_TAG = "latest"
-        // 🌟 保留 DOCKER_API_VERSION 以确保 docker 命令兼容性
         DOCKER_API_VERSION = "1.44"
     }
 
@@ -34,7 +33,7 @@ pipeline {
                 sh 'echo "MYSQL_ROOT_PASSWORD=supersecretroot" > backend/.env'
                 sh 'echo "MYSQL_PASSWORD=supersecretapp" >> backend/.env'
                 
-                // 🌟 关键修复：API URL 必须使用 Docker Compose 服务名 'api' 才能在容器内连接
+                // 🌟 关键修复：使用 Docker Compose 服务名 'api' 解决前端连接问题
                 sh 'echo "REACT_APP_API_URL=http://api:4000" > 02_frontend/.env'
             }
         }
@@ -54,12 +53,9 @@ pipeline {
             }
         }
 
-        // ❌ 移除 Docker Compose Push 阶段，不再需要 Docker Hub 账号
-
         stage('Deploy') {
             agent {
                 docker {
-                    // 仍然需要 docker-compose 和 docker CLI 来执行部署命令
                     image 'docker:24.0-cli'
                     args '--entrypoint="" -v /var/run/docker.sock:/var/run/docker.sock -u root'
                 }
@@ -68,7 +64,7 @@ pipeline {
                 echo '🚀 使用本地构建的镜像部署应用...'
                 // 停止并清理旧容器
                 sh 'docker-compose down'
-                // 启动新容器
+                // 启动新容器，--build 可选但安全
                 sh 'docker-compose up -d --build'
             }
         }
@@ -76,7 +72,7 @@ pipeline {
     
     post {
         success {
-            echo "✅ 构建成功，应用已部署！"
+            echo "✅ 构建成功，应用已部署！现在可以通过 http://<宿主机IP>:3000 访问前端。"
         }
         failure {
             echo "❌ 构建失败，请检查日志。"

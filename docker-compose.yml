@@ -40,14 +40,14 @@ services:
   jenkins:
     image: jenkins/jenkins:lts
     user: root
-    # 🌟 修复 Git 执行错误的关键：授予特权，解决 spawn helper 失败
+    # 🌟 关键修复：添加特权模式，解决 Git 进程派生（spawn）失败问题
     privileged: true 
     ports:
       - "8081:8080"   # 宿主机 8081 → 容器 8080
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
-      # 挂载 docker.sock 以实现 Docker-in-Docker 或 Docker-out-of-Docker
+      # 挂载 docker.sock 以便 Jenkins 执行 Docker 命令
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
